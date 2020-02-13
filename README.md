@@ -43,3 +43,7 @@ gen lon_alex = 13.4132147
 // calculate travel time and distances:
 osrmtime lat lon lat_alex lon_alex , mapfile("mymaps/berlin.osrm") osrmdir("/path/to/osrm/")
 ```
+
+## Contact
+
+In case something doesn't work, please feel free to contact me at christoph[dot]rust[at]ur[dot]de.
