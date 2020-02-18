@@ -1,4 +1,4 @@
-*! version 1.3.3 , 17sep2019
+*! version 1.3.4 , 18feb2020
 *! osrminterface.ado
 *! christoph.rust@wiwi.uni-regenbsburg.de
 *! stephan.huber@wiwi.uni-regensburg.de
