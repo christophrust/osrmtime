@@ -1,5 +1,5 @@
-*! version 1.3.3 , 17sep2019
-*! now working with OSRM versions 4.9.0 up to 5.21.0
+*! version 1.3.4 , 18feb2020
+*! now working with OSRM versions 4.9.0 up to 5.22.0
 *! osrmtime.ado
 *! christoph.rust@wiwi.uni-regensburg.de
 *! stephan.huber@wiwi.uni-regensburg.de
@@ -56,7 +56,7 @@ else {
 		exit
 		}
 	}
-		
+
 
 /* adjust path for linux and Mac */
 if c(os)!="Windows"{
@@ -86,7 +86,7 @@ else if regexm("`file'" , "[0-9]*\.[0-9]*\.[0-9]*") {
     tokenize "`osrm_version'" , p(".")
     local osrm_ver = `1'
     local subver = `3'
-    if (`osrm_ver'==5 & `subver'>21) | `osrm_ver'>5 {
+    if (`osrm_ver'==5 & `subver'>22) | `osrm_ver'>5 {
         di as err "Your OSRM version is `osrm_version'!"
         di as err "osrmtime has been tested only with versions 4.9.0 up to 5.21.0!"
         di as err "If you encounter an error, please use one of the tested versions!"
@@ -143,7 +143,7 @@ if regexm("`mapfile'"," ") &c(os)=="Windows" {
 	di in smcl "{p 0 0 4}{err:Path provided for your mapfile contains a space character, OSRM does not work with that. Please provide a path without spaces} {break}{err:This is a known bug....}"
 	exit
 	}
- 
+
 
 qui count
 local N = r(N)
@@ -152,13 +152,13 @@ if `N' < 10*`threads'*`servers' {
 	local threads = 1
 	local servers = 1
 	}
-	
-if `N' < 10*`threads'*`servers' { 
+
+if `N' < 10*`threads'*`servers' {
 	/* this is for a nicer output when only few obs*/
 	local progress progress
 	}
 
-	
+
 /* making a subdirectory */
 cap mkdir osrm_tempfiles
 
@@ -186,11 +186,11 @@ forvalues l=1/`servers' {
 	}
 if `sum'==`servers' di as res "{col 25}running!"
 else di as res "{col 25}not running!"
-	
 
-else {	
+
+else {
 	di as txt "Starting OSRM " _continue
-	
+
 	forvalues l= 1/`servers' {
 		if `server`l''==0 {
 			if c(os)=="Windows" {
@@ -379,7 +379,7 @@ else if c(os)=="MacOSX" {
         local ++l
     }
     file write shell "cd `pwdir'" _n
-    file close shell 
+    file close shell
     /* start subroutines */
     shell chmod +x `pwdir'/osrm_tempfiles/__tmp_osrm.sh
     winexec `pwdir'/osrm_tempfiles/__tmp_osrm.sh
@@ -397,9 +397,9 @@ if `parts' > 1{
 osrminterface `varlist' , port(`port`srvnum'') `verbose' `progress' linewidth(`linelength') osrmver(`osrm_version')
 if `parts' > 1 {
     qui save osrm_tempfiles/temp_package_routed`l' , replace
-    
+
     /* collecting datasets when finished */
-    
+
     local bool=1
     while `bool' {
         local sum = 0
@@ -410,7 +410,7 @@ if `parts' > 1 {
         if `sum'==`parts' local bool=0
         else sleep 1000
     }
-    
+
     use osrm_tempfiles/temp_package_routed1 , clear
     forvalues l=2/`parts' {
         append using osrm_tempfiles/temp_package_routed`l'
@@ -440,7 +440,7 @@ if "`cleanup'"=="" {
         shell rm -r -f osrm_tempfiles
     }
 }
-di 
+di
 di
 label var distance "Distance of shortest route in meters"
 label var duration "Duration of shortest route in seconds"
