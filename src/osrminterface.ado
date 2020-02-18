@@ -33,7 +33,7 @@ end
 
 mata
 /* sample output
-http://132.199.124.88:5000/viaroute?loc=52.517037,13.388860&loc=52.523219,13.428555alt=false&geometry=false
+http://localhost:5000/viaroute?loc=52.517037,13.388860&loc=52.523219,13.428555alt=false&geometry=false
 
 {"status":200,
 "status_message":"Found route between points",
@@ -60,7 +60,6 @@ function getdist1(real lat1_num, real lon1_num, real lat2_num, real lon2_num , s
     lat2 = strofreal(lat2_num)
     lon2 = strofreal(lon2_num)
     url = "http://127.0.0.1:" + port + "/viaroute?loc=" + lat1 + "," + lon1 + "&loc=" + lat2 + "," + lon2 + "alt=false&geometry=false"
-    // url = "http://132.199.124.88:" + port + "/viaroute?loc=" + lat1 + "," + lon1 + "&loc=" + lat2 + "," + lon2 + "alt=false&geometry=false"
     fh = _fopen(url , "r")
     if (fh >= 0 ) {
         file = ""
@@ -176,6 +175,10 @@ http://127.0.0.1:5000/route/v1/driving/13.388860,52.517037;13.428555,52.523219?o
 
 */
 
+/*
+{"routes":[{"legs":[{"summary":"","weight":8832.9,"duration":8242.8,"steps":[],"distance":231276.9}],"weight_name":"routability","weight":8832.9,"duration":8242.8,"distance":231276.9}],
+"waypoints":[{"hint":"NrkLi2q5C4sOAAAAJgAAAJ4AAAAAAAAADdxBQcsusEFdJWVBAAAAAA4AAAAmAAAAJgAAAAAAAADnpQAAyBuWANGFKAPVG5YA1oUoAwIAnxRP1hQ6","distance":1.035520492454637,"name":"Poststraße","location":[9.837512,52.987345]},{"hint":"XQ7NhoQOzYaeAQAAAAAAAAADAAAAAAAAlAW4QQAAAAAdvCpCAAAAAGcAAAAAAAAAvwAAAAAAAADnpQAATQWQABrpQwNGAZAAOOpDAwMAPxZP1hQ6","distance":73.59232454961926,"name":"","location":[9.438541,54.782234]}],"code":"Ok"}
+*/
 
 /* function for OSRM v5.*.* */
 function getdist2(real lat1_num, real lon1_num, real lat2_num, real lon2_num , string port)
@@ -196,22 +199,53 @@ function getdist2(real lat1_num, real lon1_num, real lat2_num, real lon2_num , s
         fclose(fh)
         /* parse json file */
         if (regexm(file, ".code.:.Ok")){
-            /* distance */
-            if (regexm(file, ".distance.:[0-9]*\.?[0-9]*")) {
-                match = regexs(0)
-                if (regexm(match , "[0-9][0-9]*\.?[0-9]*")) {
-                    dist = regexs(0)
+            /* parse the Route object */
+            /* either routes or waypoints object is first, we must only use the routes object */
+            if (regexm(file, "routes.*waypoints")){
+                route = regexs(0)
+
+                /* distance */
+                if (regexm(route, ".distance.:[0-9]*\.?[0-9]*")) {
+                    match = regexs(0)
+                    if (regexm(match , "[0-9][0-9]*\.?[0-9]*")) {
+                        dist = regexs(0)
+                    }
+                    else dist=""
                 }
-                else dist=""
-            }
-            /* duration */
-            if (regexm(file, ".duration.:[0-9][0-9]*\.?[0-9]*")) {
-                match = regexs(0)
-                if (regexm(match , "[0-9][0-9]*\.?[0-9]*")) {
-                    time = regexs(0)
+                /* duration */
+                if (regexm(route, ".duration.:[0-9][0-9]*\.?[0-9]*")) {
+                    match = regexs(0)
+                    if (regexm(match , "[0-9][0-9]*\.?[0-9]*")) {
+                        time = regexs(0)
+                    }
+                    else time=""
                 }
-                else time=""
+
+            } else if(regexm(file, "routes.*distance.:[0-9]*\.?[0-9]*")){
+
+                /* distance */
+                route = regexs(0)
+                if (regexm(route, ".distance.:[0-9]*\.?[0-9]*")) {
+                    match = regexs(0)
+                    if (regexm(match , "[0-9][0-9]*\.?[0-9]*")) {
+                        dist = regexs(0)
+                    }
+                    else dist=""
+                }
+
+                /* duration */
+                if (regexm(route, ".duration.:[0-9][0-9]*\.?[0-9]*")) {
+                    match = regexs(0)
+                    if (regexm(match , "[0-9][0-9]*\.?[0-9]*")) {
+                        time = regexs(0)
+                    }
+                    else time=""
+                }
+            } else {
+                dist=""
+                time=""
             }
+
             /* start , end place  for jump distance */
             pattern = ".waypoints.*location.:\[[-0-9]*\.[0-9]*,[-0-9]*\.[0-9]*.*location.:\[[-0-9]*\.[0-9]*,[-0-9]*\.[0-9]*"
             if (regexm(file, pattern )) {
