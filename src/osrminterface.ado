@@ -2,7 +2,7 @@
 *! osrminterface.ado
 *! christoph.rust@wiwi.uni-regenbsburg.de
 *! stephan.huber@wiwi.uni-regensburg.de
-*! now working with OSRM versions 4.9.0 up to 5.21.0
+*! now working with OSRM versions 4.9.0 up to 5.22.0
 
 
 // cap program drop osrminterface
@@ -23,7 +23,7 @@ else local pg 2
 tokenize "`osrmver'" , p(".")
 local osrm_ver = `1'
 local subver = `3'
-if (`osrm_ver'==5 & `subver'>21) | `osrm_ver'>5  di as txt "OSRM versions higher than 5.21.0 have not been tested yet."
+if (`osrm_ver'==5 & `subver'>22) | `osrm_ver'>5  di as txt "OSRM versions higher than 5.22.0 have not been tested yet."
 
 tokenize "`varlist'"
 mata: calcdist("`1'" , "`2'" , "`3'" , "`4'","`vb'","`pg'", "`port'",`linewidth' , `osrm_ver')
@@ -362,7 +362,7 @@ function calcdist(string var1, string var2, string var3 , string var4, string vb
             progress = floor(i/no_obs*(lw-23))
             progressp = floor(i/no_obs*10)
             if (progress > lastval) {
-                if (progressp > lastvalp) {						
+                if (progressp > lastvalp) {
                     msg = strofreal(progressp*10) +"%%"
                     printf(msg)
                     displayflush()
