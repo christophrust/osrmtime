@@ -2,7 +2,7 @@
 *! osrmprepare.ado
 *! christoph.rust@wiwi.uni-regensburg.de
 *! stephan.huber@wiwi.uni-regensburg.de
-*! now working with OSRM versions 4.9.0 up to 5.14.0
+*! now working with OSRM versions 4.9.0 up to 5.22.0
 
 // cap program drop osrmprepare
 
@@ -40,7 +40,7 @@ if _rc {
 	exit 198
 	}
 
-* make path of mapfile absolute
+/* make path of mapfile absolute */
 local pwd = c(pwd)
 if substr("`pwd'",-1,.)=="/" | substr("`pwd'",-1,.)=="\" {
 	local pwd = substr("`pwd'",1,length("`pwd'")-1 )

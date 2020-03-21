@@ -8,7 +8,7 @@ In order to make this command work, you have to install OSRM locally. This stata
 
 ### Windows
 
-Please download the release archive and unpack it at a location of your choice. Then in stata type (of course, replace the path to the location where you unpacked the content of the release archive)
+Please download the [release archive](https://github.com/christophrust/osrmtime/releases/download/v1.3.3/osrmtime_release1.3.3.zip) and unpack it at a location of your choice. Then in stata type (of course, replace the path to the location where you unpacked the content of the release archive)
 
 ```stata
 net describe osrmtime, from("/path/to/extracted/files")
@@ -19,9 +19,9 @@ and follow the instructions available there.
 
 ### Linux/Mac
 
-Of course, OSRM also runs on linux and mac-os. Please follow the installation instructions given in the [OSRM Wiki](https://github.com/Project-OSRM/osrm-backend/wiki).
+Of course, OSRM also runs very well on Linux and should also be available on mac-os. Please follow the installation instructions given in the [OSRM Wiki](https://github.com/Project-OSRM/osrm-backend/wiki). Remark: I tested these ados up tp version 5.22 which is the current release version at the time of writing.
 
-Afer copying the `ado` files into one of stata's sysdir folders, this command should work.
+Afer copying the `ado` files and the `sthlp` file into one of stata's sysdir folders (preferrably `HOME_DIR/ado/plus/o/`, this command should work.
 
 
 ## Happy routing:
