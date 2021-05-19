@@ -2,6 +2,8 @@
 
 Stata command for computing travel time and distance with OpenStreetMap data using the Open Source Routing Machine (OSRM).
 
+As an alternative, if you have to compute many distance, a [standalone CLI program](https://github.com/christophrust/osrm-example) may be more appropriate which does not have the http-api's overhead.
+
 ## Prerequisites
 
 In order to make this command work, you have to install OSRM locally. This stata package provides an automatic install script for windows users.
