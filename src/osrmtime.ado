@@ -88,7 +88,7 @@ else if regexm("`file'" , "[0-9]*\.[0-9]*\.[0-9]*") {
     local subver = `3'
     if (`osrm_ver'==5 & `subver'>22) | `osrm_ver'>5 {
         di as err "Your OSRM version is `osrm_version'!"
-        di as err "osrmtime has been tested only with versions 4.9.0 up to 5.21.0!"
+        di as err "osrmtime has been tested only with versions 4.9.0 up to 5.26.0!"
         di as err "If you encounter an error, please use one of the tested versions!"
     }
 }

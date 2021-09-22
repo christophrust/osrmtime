@@ -2,7 +2,7 @@
 *! osrminterface.ado
 *! christoph.rust@wiwi.uni-regenbsburg.de
 *! stephan.huber@wiwi.uni-regensburg.de
-*! now working with OSRM versions 4.9.0 up to 5.22.0
+*! now working with OSRM versions 4.9.0 up to 5.26.0
 
 
 // cap program drop osrminterface
@@ -23,7 +23,7 @@ else local pg 2
 tokenize "`osrmver'" , p(".")
 local osrm_ver = `1'
 local subver = `3'
-if (`osrm_ver'==5 & `subver'>22) | `osrm_ver'>5  di as txt "OSRM versions higher than 5.22.0 have not been tested yet."
+if (`osrm_ver'==5 & `subver'>22) | `osrm_ver'>5  di as txt "OSRM versions higher than 5.26.0 have not been tested yet."
 
 tokenize "`varlist'"
 mata: calcdist("`1'" , "`2'" , "`3'" , "`4'","`vb'","`pg'", "`port'",`linewidth' , `osrm_ver')
@@ -167,6 +167,22 @@ http://127.0.0.1:5000/route/v1/driving/13.388860,52.517037;13.428555,52.523219?o
 
 /* 
 
+{"waypoints":[
+    {"location":[-74.275309,40.582954],
+     "distance":18.071301,
+     "hint":"D4UFgBGFBYA-AAAA_AAAAHoCAABBAAAAyOYsQo8VL0MdGNxDgt41Qj4AAAD8AAAAegIAAEEAAADPAgAAE6aS-yo_awJYppL7kD5rAgsAfwT1iKNN",
+     "name":""
+    },
+    {"location":[-74.109219,40.670728],
+    "distance":27.200335,
+    "hint":"ZZQEgNWVBIAoAAAAJgAAAAAAAAAAAAAARbEPQmQnB0IAAAAAAAAAACgAAAAmAAAAAAAAAAAAAADPAgAA3S6V-wiWbALOLZX7jJZsAgAADwL1iKNN",
+    "name":"Avenue E"
+    }],
+ "routes":[{"distance":27871.4,"duration":1630.5,"weight_name":"routability",
+"legs":[{"distance":27871.4,"steps":[],"duration":1630.5,"weight":1630.5,"summary":""}],"weight":1630.5}],
+"code":"Ok"}
+
+{"waypoints":[{"location":[-74.275309,40.582954],"distance":18.071301,"hint":"D4UFgBGFBYA-AAAA_AAAAHoCAABBAAAAyOYsQo8VL0MdGNxDgt41Qj4AAAD8AAAAegIAAEEAAADPAgAAE6aS-yo_awJYppL7kD5rAgsAfwT1iKNN","name":""},{"location":[-74.109219,40.670728],"distance":27.200335,"hint":"ZZQEgNWVBIAoAAAAJgAAAAAAAAAAAAAARbEPQmQnB0IAAAAAAAAAACgAAAAmAAAAAAAAAAAAAADPAgAA3S6V-wiWbALOLZX7jJZsAgAADwL1iKNN","name":"Avenue E"}],"routes":[{"distance":27871.4,"duration":1630.5,"weight_name":"routability","legs":[{"distance":27871.4,"steps":[],"duration":1630.5,"weight":1630.5,"summary":""}],"weight":1630.5}],"code":"Ok"}
 
 {"waypoints":[{"location":[-121.90273,37.755246],"name":"Wycliffe Lane","hint":"NBCLgOARi4BAAAAAOAAAAAAAAABJAAAAQAAAADgAAAAAAAAASQAAANsMAAB26bv4bhlAAmjmu_imHUACAADPA-EJNeU="},
 {"location":[-121.874456,37.658998],"name":"1st Street","hint":"rd0igLTdIoAWAAAAIQAAAGUAAAAAAAAAFgAAACEAAABlAAAAAAAAANsMAADoV7z4dqE-AoRYvPgKoT4CBADfDeEJNeU="}],
