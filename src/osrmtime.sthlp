@@ -1,5 +1,5 @@
 {smcl}
-{* * version 1.3  25jan2016}
+{* * version 1.3.5  14no2021}
 {viewerjumpto "Syntax" "osrmtime##syntax"}{...}
 {viewerjumpto "Description" "osrmtime##description"}{...}
 {viewerjumpto "Prerequisites" "osrmtime##remarks"}{...}
@@ -35,7 +35,7 @@ Note: Before you test the command, please take a look on the prerequisites below
 {dlgtab:Main}
 
 {synopt:{opt mapfile()}}declares the location of the map of interest in the *.osrm-file format (e.g.: {it:"C:\mymaps\germany\germany.osrm"}); this file can get extracted by using the {cmd:osrmprepare} command which is explained below{p_end}
-{synopt:{opt osrmdir()}}announces the path in which the OSRM executables are saved; default is {it:"C:\osrm\" } on a PC using Windows and {it:"/usr/local/osrm/"} on a PC using Linux.{p_end}
+{synopt:{opt osrmdir()}}announces the path in which the OSRM executables are located; default is {it:"C:\osrm\" } on a PC using Windows and {it:"/usr/local/osrm/"} on a PC using Linux. On Linux and MacOS, osrmtime will also find the executable if it is in the system path.{p_end}
 {synopt:{opt nocleanup}}Setting {cmd:nocleanup} keeps temporary files which are generated during the process, and prevents OSRM from being shut down. This can speed up the calculation if {cmd:osrmtime} is used in a consecutive fashion with the 
    same  map, because {cmd:osrmtime} does not need to shut down and start OSRM over and over again.{p_end}
 
@@ -136,7 +136,7 @@ Please note that you only have to prepare your map once. The prepared map can be
 {synoptline}
 {synopt:{opt mapfile()}}declares the location of the downloaded OpenStreetMap in *.osm.pbf format, e.g.: {it:"C:\mymaps\germany\germany.osm.pbf"}{p_end}
 {synopt:{opt osrmdir()}}announces the path in which the OSRM executables are saved (the default is "C:\osrm\"){p_end}
-{synopt:{opt profile()}}can be either car, bicycle , or foot to prepare a map that contains either the routes for car, bicycle, or foot{p_end}
+{synopt:{opt profile()}}can be either one of the names {cmd:car}, {cmd:bicycle} or {cmd:foot} or the path of a valid profile file. osrmprepare will automatically look up some standard locations of your system to located the file.{p_end}
 {synopt:{opt diskspace()}}allows to allocate disk space for preparation, default is 5000 MB. The minimum value you have to allocate depends on the size of your map. The maximum value you can allocate depends on the size of your hard disk.{p_end}
 {synoptline}
 

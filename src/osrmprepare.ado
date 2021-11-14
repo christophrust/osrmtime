@@ -1,22 +1,16 @@
-*! version 1.3.4 , 18feb2020
+*! version 1.3.5 , 14nov2021
 *! osrmprepare.ado
-*! christoph.rust@wiwi.uni-regensburg.de
+*! christoph.rust@wu.ac.at
 *! stephan.huber@wiwi.uni-regensburg.de
-*! now working with OSRM versions 4.9.0 up to 5.22.0
+*! now working with OSRM versions 4.9.0 up to 5.26.0
 
 // cap program drop osrmprepare
 
 program define osrmprepare
 version 12.0
 
-syntax , mapfile(string) [ osrmdir(string) diskspace(integer 5000) profile(name) stxxldir(string)]
+syntax , mapfile(string) [ osrmdir(string) diskspace(integer 5000) profile(string) stxxldir(string)]
 
-/* profile */
-if "`profile'"=="" local profile car
-if !("`profile'"=="car" | "`profile'"=="bicycle" | "`profile'"=="foot") {
-	di in smcl "{p 0 0 4}{err:Profile must be either} {inp:car}{err:,} {inp:bicycle} {err:or} {inp:foot.} {break}{err:If you want to specify your own speed profile, please name it either} {inp:car.lua}{err:,} {inp:bycicle.lua} {err:or} {inp:foot.lua}"
-	exit 110
-	}
 
 /* mapfile */
 if substr("`mapfile'",-8,.)==".osm.pbf" {
@@ -57,6 +51,7 @@ if regexm("`mapfile'"," ") &c(os)=="Windows" {
 	exit
 	}
 
+/* check location of osrm executable */
 if "`osrmdir'"=="" {
 	if c(os)=="Windows" {
 		cap confirm file "C:\osrm\osrm-routed.exe"
@@ -74,8 +69,25 @@ if "`osrmdir'"=="" {
             cap confirm file "~/osrm/osrm-routed"
             if !_rc local osrmdir "~/osrm/"
             else {
-                di as err "Could not find OSRM executable"
-                exit
+		* try to locate it as system executable
+		! which osrm-routed > /tmp/stata_osrmpath.tmp
+		cap file open testfile using /tmp/stata_osrmpath.tmp , read
+		if !_rc {
+		    file read testfile file
+		    while r(eof)==0 {
+		        file read testfile line
+		        local file `file' `line'
+		    }
+                    file close testfile
+		    cap erase /tmp/stata_osrmpath.tmp
+		    if regexm("`file'", "osrm-routed") {
+			local osrmdir = regexr("`file'", "osrm-routed","")
+		    }
+		    else {
+			di as err "Could not find OSRM executable"
+			exit
+                    } 
+		}
             }
         }
     }
@@ -93,6 +105,44 @@ else {
         exit
     }
 }
+
+/* get location of lua profile */
+
+/* check some standard locations */
+local profile_file ""
+cap confirm file "`profile'.lua"
+if !_rc local profile_file "`c(pwd)'/`profile'.lua"
+else {
+    cap confirm file "`osrmdir'/`profile'.lua"
+    if !_rc local profile_file "`osrmdir'/`profile'.lua"
+    else {
+        cap confirm file "`osrmdir'/profiles/`profile'.lua"
+        if !_rc local profile_file "`osrmdir'/`profile'.lua"
+        else {
+            if c(os)!="Windows" cap confirm file "/usr/local/share/osrm/profiles/`profile'.lua"
+	    if c(os)!="Windows" & !_rc local profile_file "/usr/local/share/osrm/profiles/`profile'.lua"
+	    else {
+	        cap confirm file "`profile'"
+		if !_rc {
+		    /* make path absolut in case it is a relative path */
+		    if !(regexm("`profile'", "^/") | !regexm("`profile'", "^[A-Z]:")) {
+		        local profile_file "`c(pwd)'/`profile'"
+		    }
+		    else local profile_file "`profile'"
+		    
+		}
+		else {
+	            di in smcl "{p 0 0 4}{err:Could neither find profile `profile'!}{break}{err:Please provide either a name of car, foot, or bycicle or a valid file using option} {inp:profile()}"
+		    di in smcl "{p 0 0 4}{txt:Standard profiles are called either} {inp:car}{err:,} {inp:bicycle} {txt:or} {inp:foot.} {break}{txt:If you want to specify your own speed profile, provide a valide file path.}"
+                    exit
+	        }
+	    }
+        }
+    }
+}
+
+di in smcl "{p 0 0 4}{txt: Using profile `profile_file'...}"
+
 
 /* temp directory for stxxl */
 if "`stxxldir'"!="" local tmpdir = "`stxxldir'"
@@ -148,7 +198,7 @@ else if regexm("`file'" , "[0-9]*\.[0-9]*\.[0-9]*") {
     tokenize "`osrm_version'" , p(".")
     local mainver = `1'
     local subver = `3'
-    if "`osrm_version'"!="4.9.0" & ((`mainver'==5 & `subver' >22) | `mainver'>5 ){
+    if "`osrm_version'"!="4.9.0" & ((`mainver'==5 & `subver' >26) | `mainver'>5 ){
         di as err "Your OSRM version is `osrm_version'!"
         di as err "osrmtime has been tested only with versions 4.9.0 up to 5.26.0!"
         di as err "If you encounter an error, please use one of these versions!"
@@ -167,8 +217,8 @@ if c(os)=="Windows" {
 	qui file open bat using _osrm_prepare.bat , write replace
 	file write bat "REM batch file generatet by stata program osrmprepare" _n _n
 	file write bat `"pushd "`osrmdir'""' _n
-	file write bat `"osrm-extract.exe "`mapfile'" -p `profile'.lua"' _n
-	if `mainver'==4 file write bat `"osrm-prepare.exe "`map'.osrm" -p `profile'.lua"' _n
+	file write bat `"osrm-extract.exe "`mapfile'" -p `profile_file'"' _n
+	if `mainver'==4 file write bat `"osrm-prepare.exe "`map'.osrm" -p `profile_file'"' _n
     if `mainver'>=5 file write bat `"osrm-contract.exe "`map'.osrm""' _n
 	file write bat "popd" _n
 	file close bat
@@ -189,15 +239,17 @@ if c(os)=="Windows" {
 	}
 
 else {
-	qui file open stxxl using "`osrmdir'/.stxxl" , write replace
-	file write stxxl "disk=`tmpdir'/stxxl,`diskspace',syscall" _n
-	file close stxxl
+	if `mainver' == 4 | (`mainver' == 5 & `subver'<=9) {
+		qui file open stxxl using "`osrmdir'/.stxxl" , write replace
+		file write stxxl "disk=`tmpdir'/stxxl,`diskspace',syscall" _n
+		file close stxxl
+	}
 
 	qui file open shell using _osrm_prepare.sh , write replace
 	file write shell "# Shell file generated by stata program osrmprepare" _n
 	file write shell `"cd `osrmdir'"'_n
-	file write shell `"./osrm-extract `mapfile' -p `profile'.lua"' _n
-	if `mainver'==4 file write shell `"./osrm-prepare `map'.osrm -p `profile'.lua"' _n
+	file write shell `"./osrm-extract `mapfile' -p `profile_file'"' _n
+	if `mainver'==4 file write shell `"./osrm-prepare `map'.osrm -p `profile_file'"' _n
     else if `mainver'>=5 file write shell `"./osrm-contract `map'.osrm"' _n
 	file close shell
 	shell chmod +x _osrm_prepare.sh

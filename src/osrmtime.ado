@@ -23,27 +23,47 @@ di
 
 
 /* checkings */
-
+/* check location of osrm executable */
 if "`osrmdir'"=="" {
 	if c(os)=="Windows" {
 		cap confirm file "C:\osrm\osrm-routed.exe"
-		if !_rc local exefile "C:\osrm\osrm-routed.exe"
+		if !_rc local osrmdir "C:\osrm\"
 		else {
 			di as err "Could not find OSRM executable"
 			exit
 			}
 		}
 	// if c(os)=="Unix" {
-	else {
-		cap confirm file "/usr/local/osrm/osrm-routed"
-		if !_rc local exefile "/usr/local/osrm/osrm-routed"
-		else {
+    else {
+        cap confirm file "/usr/local/osrm/osrm-routed"
+        if !_rc local osrmdir "/usr/local/osrm/"
+        else {
+            cap confirm file "~/osrm/osrm-routed"
+            if !_rc local osrmdir "~/osrm/"
+            else {
+		* try to locate it as system executable
+		! which osrm-routed > /tmp/stata_osrmpath.tmp
+		cap file open testfile using /tmp/stata_osrmpath.tmp , read
+		if !_rc {
+		    file read testfile file
+		    while r(eof)==0 {
+		        file read testfile line
+		        local file `file' `line'
+		    }
+                    file close testfile
+		    cap erase /tmp/stata_osrmpath.tmp
+		    if regexm("`file'", "osrm-routed") {
+			local osrmdir = regexr("`file'", "osrm-routed","")
+		    }
+		    else {
 			di as err "Could not find OSRM executable"
 			exit
-			}
+                    } 
 		}
-	}
-
+            }
+        }
+    }
+}
 else {
 	if (substr("`osrmdir'",-1,.)=="/" | substr("`osrmdir'",-1,.)=="\") {
 		local osrmdir = substr("`osrmdir'",1,length("`osrmdir'")-1)
