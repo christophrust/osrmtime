@@ -62,9 +62,17 @@ if "`osrmdir'"=="" {
 			di as err "Could not find OSRM executable"
 			exit
                     } 
-		}
+          		}
             }
         }
+    }
+    if "`osrmdir'" == "" {
+    	di as err "Could not find OSRM executable"
+	    exit
+    }
+    else {
+        if c(os)=="Windows" local exefile ="`osrmdir'\osrm-routed.exe"
+        else local exefile ="`osrmdir'/osrm-routed"
     }
 }
 else {
@@ -142,8 +150,11 @@ if "`mapfile'"=="" {
 else {
 	cap confirm file "`mapfile'"
 	if _rc {
-		di as err "File `mapfile' does not exist"
-		exit 601
+        cap confirm file "`mapfile'.hsgr"
+        if _rc {
+            di as err "File `mapfile' does not exist"
+            exit 601
+            }
 		}
 	}
 if substr(lower("`mapfile'"),-5,.)!=".osrm" {
@@ -200,12 +211,15 @@ tokenize `ports'
 local sum=0
 forvalues l=1/`servers' {
 	local port`l' = ``l''
-	if _rc==2 | _rc==677 local server`l' = 0
-	if _rc==672 {
-		local server`l' = 1
-		local ++sum
-		}
 	cap file open `filehandle' using "http://127.0.0.1:`port`l''/route/v1/driving/0.0,0.0;0.0,0.0?overview=false" , r
+    // di _rc
+    if !_rc {
+       local server`l' = 1
+	   local ++sum
+       }
+    else {
+        local server`l' = 0
+        }
     cap file close `filehandle'
 	}
 if `sum'==`servers' di as res "{col 25}running!"
@@ -239,9 +253,10 @@ else {
 	while (`check'<20 & `check' >0){
 		local sum=0
 		forvalues l=1/`servers' {
-			if _rc==2 local server`l' = 0
-			if _rc==672 local server`l' = 1
 			cap file open `filehandle' using "http://127.0.0.1:`port`l''/route/v1/driving/0.0,0.0;0.0,0.0?overview=false" , r
+            // di _rc
+			if !_rc local server`l' = 1
+            else local server`l' = 0
 			local sum = `sum'+`server`l''
             cap file close `filehandle'
 			}
