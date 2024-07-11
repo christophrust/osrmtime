@@ -1,5 +1,5 @@
-*! version 1.3.4 , 18feb2020
-*! now working with OSRM versions 4.9.0 up to 5.22.0
+*! version 1.3.6 , 11jul2024
+*! tested with OSRM versions 4.9.0 up to 5.27.0
 *! osrmtime.ado
 *! christoph.rust@wiwi.uni-regensburg.de
 *! stephan.huber@wiwi.uni-regensburg.de

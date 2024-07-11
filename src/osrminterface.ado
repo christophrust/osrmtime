@@ -1,8 +1,8 @@
-*! version 1.3.4 , 18feb2020
+*! version 1.3.6 , 11jul2024
 *! osrminterface.ado
 *! christoph.rust@wiwi.uni-regenbsburg.de
 *! stephan.huber@wiwi.uni-regensburg.de
-*! now working with OSRM versions 4.9.0 up to 5.26.0
+*! now working with OSRM versions 4.9.0 up to 5.27.0
 
 
 // cap program drop osrminterface
