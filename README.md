@@ -10,7 +10,7 @@ In order to make this command work, you have to install OSRM locally. This stata
 
 ### Windows
 
-Please download the [release archive](https://github.com/christophrust/osrmtime/releases/download/v1.3.3/osrmtime_release1.3.3.zip) and unpack it at a location of your choice.
+Please download the [release archive](https://github.com/christophrust/osrmtime/releases/download/v1.3.6/osrmtime_v1.3.6.zip) and unpack it at a location of your choice.
 
 #### Automatic installation with Stata
 
@@ -31,9 +31,9 @@ In some cases (corporate environments with limited permissions), the automatic i
 
 ### Linux/Mac
 
-Of course, OSRM also runs very well on Linux and should also be available on mac-os. Please follow the installation instructions given in the [OSRM Wiki](https://github.com/Project-OSRM/osrm-backend/wiki). Remark: I tested these ados up to version 5.22 which is the current release version at the time of writing.
+Of course, OSRM also runs very well on Linux and should also be available on MacOS. Please follow the installation instructions given in the [OSRM Wiki](https://github.com/Project-OSRM/osrm-backend/wiki). Remark: I tested these ados up to version 5.27 which is the current release version at the time of writing.
 
-Afer copying the `ado` files and the `sthlp` file into one of stata's sysdir folders (preferrably `HOME_DIR/ado/plus/o/`, this command should work.
+Afer copying the `ado` files and the `sthlp` file into one of stata's sysdir folders (preferrably `$HOME/ado/plus/o/`, this command should work.
 
 
 ## Happy routing:
@@ -58,4 +58,4 @@ osrmtime lat lon lat_alex lon_alex , mapfile("mymaps/berlin.osrm") osrmdir("/pat
 
 ## Contact
 
-In case something doesn't work, please feel free to contact me at christoph[dot]rust[at]ur[dot]de.
+In case something doesn't work, please feel free to contact me at christoph[dot]rust[at]ur[dot]de or file an issue here at github.
